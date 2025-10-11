@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import QRCode from 'react-qr-code';
+
 
 // Tab Components
 const Dashboard = () => {
@@ -73,8 +74,9 @@ const QRGeneration = () => {
                 >
                     Generate QR
                 </button>
+                <div className="mt-4 p-5 border-2 border-gray-400 flex flex-col rounded-xl">
                 {showQR && reviewId && (
-                    <div className="mt-4 p-5 border-2 border-gray-400 flex flex-col rounded-xl">
+        <>
                         <QRCode id="qr-code" value={getReviewUrl(reviewId)} size={400} />
                         <p className="mt-2 text-sm text-gray-600 break-all">
                             {getReviewUrl(reviewId)}
@@ -85,11 +87,12 @@ const QRGeneration = () => {
                         >
                             Download QR Code
                         </button>
-                    </div>
+</>
                 )}
+                </div>
             </div>
-            <div className="border-2 border-gray-200 w-full rounded-xl p-5 bg-gray-100">
-                <h1>qr display section</h1>
+            <div className="border-2 border-gray-200 w-full rounded-xl p-5 bg-gray-100 ">
+                <h1 className="font-bold">Generated QR Codes</h1>
             </div>
             </div>
         </div>
@@ -97,6 +100,9 @@ const QRGeneration = () => {
 };
 
 function AdminPanel() {
+    useEffect(() => {
+    document.title = "IDEAL TRADERS | ADMIN PANEL";
+  }, []);
     const [activeTab, setActiveTab] = useState('dashboard');
 
     const handleTabClick = (tabName) => {
