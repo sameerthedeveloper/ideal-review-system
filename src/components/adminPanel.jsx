@@ -1,84 +1,84 @@
-import React, { useState } from 'react';
-import { getDocs, collection } from 'firebase/firestore';
-import { db } from '../firebase';
-import AdminPanel from './adminPanel';
+import React, { useState } from "react";
 
-const AdminLogin = () => {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError('');
-        if (!username || !password) {
-            setError('Please enter both username and password');
-            return;
-        }
-        try {
-            const adminCol = collection(db, 'admin');
-            const snapshot = await getDocs(adminCol);
-            const trimmedUsername = username.trim();
-            const trimmedPassword = password.trim();
-            const found = snapshot.docs.some(doc => {
-                const data = doc.data();
-                return (
-                    data.username === trimmedUsername &&
-                    data.password === trimmedPassword
-                );
-            });
-            if (found) {
-                setLoggedIn(true);
-            } else {
-                setError('Incorrect username or password');
-            }
-        } catch (err) {
-            setError('Login failed');
-        }
-    };
-
-    if (loggedIn) {
-        return <AdminPanel />;
-    }
-
+// Tab Components
+const Dashboard = () => {
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100">
-            <form
-                onSubmit={handleLogin}
-                className="bg-white p-8 rounded shadow-md w-full max-w-sm"
-            >
-                <h2 className="text-2xl font-bold mb-6 text-center">Admin Login</h2>
-                {error && <div className="mb-4 text-red-500">{error}</div>}
-                <div className="mb-4">
-                    <label className="block mb-1 text-gray-700">Username</label>
-                    <input
-                        type="text"
-                        value={username}
-                        onChange={e => setUsername(e.target.value)}
-                        className="w-full border border-gray-300 rounded px-3 py-2"
-                        required
-                    />
-                </div>
-                <div className="mb-6">
-                    <label className="block mb-1 text-gray-700">Password</label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={e => setPassword(e.target.value)}
-                        className="w-full border border-gray-300 rounded px-3 py-2"
-                        required
-                    />
-                </div>
-                <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
-                >
-                    Login
-                </button>
-            </form>
+        <div className="p-4">
+            <h2 className="text-xl font-semibold mb-4">Dashboard</h2>
+            {/* Add your dashboard content here */}
         </div>
     );
 };
 
-export default AdminLogin;
+const Employees = () => {
+    return (
+        <div className="p-4">
+            <h2 className="text-xl font-semibold mb-4">Employees</h2>
+            {/* Add your employees content here */}
+        </div>
+    );
+};
+
+const QRGeneration = () => {
+    return (
+        <div className="p-4">
+            <h2 className="text-xl font-semibold mb-4">QR Generation</h2>
+            {/* Add your QR generation content here */}
+        </div>
+    );
+};
+
+function AdminPanel() {
+    const [activeTab, setActiveTab] = useState('dashboard');
+
+    const handleTabClick = (tabName) => {
+        setActiveTab(tabName);
+    };
+
+    // Render active tab content
+    const renderTabContent = () => {
+        switch (activeTab) {
+            case 'dashboard':
+                return <Dashboard />;
+            case 'employees':
+                return <Employees />;
+            case 'qr':
+                return <QRGeneration />;
+            default:
+                return <Dashboard />;
+        }
+    };
+
+    return (
+        <>
+            <div className="w-screen p-5 border-b border-gray-300 shadow-lg">
+                <h1 className="text-lg font-bold">Admin Panel</h1>
+            </div>
+            <div>
+                <div className="flex space-x-4 mt-4 p-4 bg-white border-b border-gray-300">
+                    <button 
+                        className={`px-4 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${activeTab === 'dashboard' ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                        onClick={() => handleTabClick('dashboard')}
+                    >
+                        Dashboard
+                    </button>
+                    <button 
+                        className={`px-4 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${activeTab === 'employees' ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                        onClick={() => handleTabClick('employees')}
+                    >
+                        Employees 
+                    </button>
+                    <button 
+                        className={`px-4 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${activeTab === 'qr' ? 'bg-blue-500 text-white' : 'bg-gray-200 hover:bg-gray-300'}`}
+                        onClick={() => handleTabClick('qr')}>
+                        QR Generation
+                    </button>
+                </div>
+                {/* Render tab content */}
+                {renderTabContent()}
+            </div>
+        </>
+    );
+}
+
+export default AdminPanel;
