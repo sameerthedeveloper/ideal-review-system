@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Dashboard from "./adminComps/Dashboard";
 import Employees from "./adminComps/Employees";
 import QRGeneration from "./adminComps/QRGeneration";
 import Review from "./adminComps/Review";
+import Customers from "./adminComps/Customers";
 
 
 
@@ -21,7 +21,7 @@ function AdminPanel() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "dashboard":
-        return <Dashboard />;
+        return <Customers />;
       case "employees":
         return <Employees />;
       case "qr":
@@ -46,7 +46,7 @@ function AdminPanel() {
             }`}
             onClick={() => handleTabClick("dashboard")}
           >
-            Dashboard
+            Customer Details
           </button>
           <button
             className={`px-4 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
