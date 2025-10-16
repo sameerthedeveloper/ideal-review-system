@@ -7,6 +7,7 @@ import {
   addDoc,
   updateDoc,
   doc,
+  deleteDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../firebase";
@@ -35,12 +36,10 @@ function Review() {
   useEffect(() => {
     let data = [...reviews];
 
-    // Filter by staff ID
     if (filter !== "all") {
       data = data.filter((r) => r.staffId === filter);
     }
 
-    // Search by name, email, or phone
     if (search.trim() !== "") {
       const term = search.toLowerCase();
       data = data.filter(
@@ -57,7 +56,6 @@ function Review() {
   // 🔹 Update Clients collection from Reviews
   const handleUpdateClients = async () => {
     setLoading(true);
-
     try {
       for (const review of reviews) {
         const { name, phone, email } = review;
@@ -74,17 +72,13 @@ function Review() {
         if (!snapshotPhone.empty) {
           const docRef = doc(db, "Clients", snapshotPhone.docs[0].id);
           await updateDoc(docRef, { name, phone, email });
-          console.log(`✅ Updated client (phone): ${phone}`);
         } else if (!snapshotEmail.empty) {
           const docRef = doc(db, "Clients", snapshotEmail.docs[0].id);
           await updateDoc(docRef, { name, phone, email });
-          console.log(`✅ Updated client (email): ${email}`);
         } else {
           await addDoc(clientRef, { name, phone, email });
-          console.log(`🆕 Added new client: ${name}`);
         }
       }
-
       alert("✅ Clients data successfully updated!");
     } catch (error) {
       console.error("Error updating clients:", error);
@@ -94,7 +88,22 @@ function Review() {
     }
   };
 
-  // 🔹 Get unique staff IDs for dropdown filter
+  // 🔹 Delete a review
+  const handleDeleteReview = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this review?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, "Reviews", id));
+      alert("✅ Review deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      alert("❌ Failed to delete review");
+    }
+  };
+
   const staffList = [...new Set(reviews.map((r) => r.staffId))].filter(Boolean);
 
   return (
@@ -102,9 +111,7 @@ function Review() {
       {/* Header and actions */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-3 mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Reviews</h2>
-
         <div className="flex flex-col md:flex-row items-center gap-3">
-          {/* 🔍 Search */}
           <input
             type="text"
             placeholder="Search by name, phone, or email..."
@@ -112,8 +119,6 @@ function Review() {
             onChange={(e) => setSearch(e.target.value)}
             className="border border-gray-300 rounded p-2 w-64 focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
           />
-
-          {/* 🎯 Filter */}
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
@@ -126,8 +131,6 @@ function Review() {
               </option>
             ))}
           </select>
-
-          {/* 🔁 Update Clients */}
           <button
             onClick={handleUpdateClients}
             disabled={loading}
@@ -150,6 +153,7 @@ function Review() {
               <th className="px-6 py-3 text-left">Customer Email</th>
               <th className="px-6 py-3 text-left">Staff Rating</th>
               <th className="px-6 py-3 text-left">Feedback</th>
+              <th className="px-6 py-3 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -166,12 +170,20 @@ function Review() {
                   <td className="px-6 py-4">{review.email}</td>
                   <td className="px-6 py-4">{review.rating}</td>
                   <td className="px-6 py-4">{review.feedback}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => handleDeleteReview(review.id)}
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
                 <td
-                  colSpan="7"
+                  colSpan="8"
                   className="text-center py-6 text-gray-500 italic"
                 >
                   No reviews found.
