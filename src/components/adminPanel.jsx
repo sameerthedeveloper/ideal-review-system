@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Dashboard from "./adminComps/Dashboard";
 import Employees from "./adminComps/Employees";
 import QRGeneration from "./adminComps/QRGeneration";
+import Review from "./adminComps/Review";
+
 
 
 
@@ -25,7 +27,7 @@ function AdminPanel() {
       case "qr":
         return <QRGeneration />;
       default:
-        return <Dashboard />;
+        return <Review />;
     }
   };
 
