@@ -1,7 +1,6 @@
 {
   "hosting": {
-    "site": "idealtraders-review",
-    "public": "public",
+    "public": "dist",
     "ignore": [
       "firebase.json",
       "**/.*",
